@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"crd/memcached-operator/pkg/controller/migration"
+	"github.com/hth0919/migrationcontroller/pkg/controller/migration"
 )
 
 func init() {

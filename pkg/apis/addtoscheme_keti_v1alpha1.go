@@ -1,7 +1,7 @@
 package apis
 
 import (
-	"crd/memcached-operator/pkg/apis/keti/v1alpha1"
+	"github.com/hth0919/migrationcontroller/pkg/apis/keti/v1alpha1"
 )
 
 func init() {
