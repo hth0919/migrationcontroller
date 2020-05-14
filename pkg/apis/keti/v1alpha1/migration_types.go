@@ -20,7 +20,7 @@ type MigrationSpec struct {
 		Type metav1.TypeMeta `json:"type,omitempty"`
 		Object metav1.ObjectMeta `json:"object,omitempty"`
 		PodSpec v1.PodSpec `json:"podspec,omitempty"`
-	}
+	}`json:"pod,omitempty"`
 
 }
 
