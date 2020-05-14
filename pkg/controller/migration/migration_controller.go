@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"time"
 
-	ketiv1alpha1 "crd/memcached-operator/pkg/apis/keti/v1alpha1"
+	ketiv1alpha1 "github.com/hth0919/migrationcontroller/pkg/apis/keti/v1alpha1"
 
 	cp "github.com/hth0919/checkpointproto"
 	"google.golang.org/grpc"
@@ -139,7 +139,7 @@ func (r *ReconcileMigration) Reconcile(request reconcile.Request) (reconcile.Res
 		reqLogger.Info("Creating a new DaemonSet", "DaemonSet.Namespace", dem.Namespace, "DaemonSet.Name", dem.Name)
 		err = r.client.Create(context.TODO(), dem)
 		if err != nil {
-			reqLogger.Error(err, "Failed to create new Deployment", "Deployment.Namespace", dem.Namespace, "Deployment.Name", dep.Name)
+			//reqLogger.Error(err, "Failed to create new Deployment", "Deployment.Namespace", dem.Namespace, "Deployment.Name", dep.Name)
 			return reconcile.Result{}, err
 		}
 		// Deployment가 성공적으로 생성되었다면, 이 이벤트를 다시 Requeue 합니다.

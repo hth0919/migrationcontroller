@@ -1,4 +1,4 @@
-module crd/memcached-operator
+module github.com/hth0919/migrationcontroller
 
 go 1.13
 
