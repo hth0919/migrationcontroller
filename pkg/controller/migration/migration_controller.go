@@ -208,11 +208,11 @@ func convertHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconcile
 }
 
 func checkpointHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconcile.Result, error) {
-
+	return reconcile.Result{Requeue: true}, nil
 }
 
 func migrationHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconcile.Result, error) {
-
+	return reconcile.Result{Requeue: true}, nil
 }
 
 func podDeleteHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconcile.Result, error) {
@@ -221,6 +221,7 @@ func podDeleteHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconci
 	if err != nil && errors.IsNotFound(err) {
 		return reconcile.Result{}, err
 	}
+	return reconcile.Result{Requeue: true}, nil
 }
 
 // newPodForCR returns a busybox pod with the same name/namespace as the cr
