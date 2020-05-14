@@ -212,6 +212,7 @@ func checkpointHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconc
 }
 
 func migrationHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconcile.Result, error) {
+
 	return reconcile.Result{Requeue: true}, nil
 }
 
