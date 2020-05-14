@@ -1,0 +1,27 @@
+syntax = 'proto2';
+
+package checkpoint;
+
+service CheckpointPeriod {
+    rpc SetCheckpointPeriod (InputValue) returns (ReturnValue) {}
+    rpc CheckpointCreate (CreateCheckpoint) returns (PodReturnValue) {}
+}
+
+message InputValue {
+    required int64 Period = 1;
+    repeated string PodName = 2;
+}
+
+message ReturnValue {
+    required int64 Period = 1;
+    required string err = 2;
+}
+
+message CreateCheckpoint {
+    required string PodName = 1;
+}
+
+message PodReturnValue {
+    required string CheckpointName = 1;
+    required string err = 2;
+}
