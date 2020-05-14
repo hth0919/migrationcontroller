@@ -1,7 +1,7 @@
 apiVersion: keti.migration/v1alpha1
 kind: Migration
 metadata:
-  name: example-migration
+  name: example-migration2
 spec:
   # Add fields here
   Purpose: abb
