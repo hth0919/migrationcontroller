@@ -8,6 +8,13 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+type Pod struct {
+	Type metav1.TypeMeta `json:"type,omitempty"`
+	Object metav1.ObjectMeta `json:"object,omitempty"`
+	PodSpec v1.PodSpec `json:"podspec,omitempty"`
+	PodStatus v1.PodStatus `json:"podstatus,omitempty"`
+}
+
 // MigrationSpec defines the desired state of Migration
 type MigrationSpec struct {
 	Purpose string `json:"purpose"`
@@ -16,11 +23,7 @@ type MigrationSpec struct {
 	Podname string `json:"pod"`
 	DestinationNode string `json:"destinationnode,omitempty"`
 	Period int64 `json:"period,omitempty"`
-	Pod struct{
-		Type metav1.TypeMeta `json:"type,omitempty"`
-		Object metav1.ObjectMeta `json:"object,omitempty"`
-		PodSpec v1.PodSpec `json:"podspec,omitempty"`
-	}`json:"pod,omitempty"`
+	Pod Pod`json:"pod,omitempty"`
 
 }
 
