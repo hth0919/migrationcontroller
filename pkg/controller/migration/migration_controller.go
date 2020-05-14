@@ -2,17 +2,17 @@ package migration
 
 import (
 	"context"
+	"io/ioutil"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	logs "log"
-	"reflect"
+	"os"
 	"time"
 
 	ketiv1alpha1 "github.com/hth0919/migrationcontroller/pkg/apis/keti/v1alpha1"
 
 	cp "github.com/hth0919/checkpointproto"
 	"google.golang.org/grpc"
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -25,6 +25,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
+	"gopkg.in/yaml.v2"
 )
 
 var log = logf.Log.WithName("controller_migration")
@@ -108,18 +109,21 @@ func (r *ReconcileMigration) Reconcile(request reconcile.Request) (reconcile.Res
 		return reconcile.Result{}, err
 	}
 	if migration.Spec.Purpose == "Convert" || migration.Spec.Purpose == "convert" {
+		migration.Spec.Purpose = "convert"
 		result, err := convertHandler(migration,r)
 		if err != nil {
 			reqLogger.Error(err, err.Error())
 			return result, err
 		}
 	} else if migration.Spec.Purpose == "Checkpoint" || migration.Spec.Purpose == "checkpoint" || migration.Spec.Purpose == "CheckPoint" {
+		migration.Spec.Purpose = "checkpoint"
 		result, err := checkpointHandler(migration,r)
 		if err != nil {
 			reqLogger.Error(err, err.Error())
 			return result, err
 		}
 	} else if migration.Spec.Purpose == "Migration" || migration.Spec.Purpose == "migration" {
+		migration.Spec.Purpose = "migration"
 		result, err := migrationHandler(migration,r)
 		if err != nil {
 			reqLogger.Error(err, err.Error())
@@ -129,7 +133,7 @@ func (r *ReconcileMigration) Reconcile(request reconcile.Request) (reconcile.Res
 		reqLogger.Error(err, "Unsupported Value", migration.Spec.Purpose, " in keti.Migration")
 		return reconcile.Result{}, err
 	}
-
+/*
 
 		found := &appsv1.DaemonSet{}
 	err = r.client.Get(context.TODO(), types.NamespacedName{Name: migration.Name, Namespace: migration.Namespace}, found)
@@ -149,7 +153,7 @@ func (r *ReconcileMigration) Reconcile(request reconcile.Request) (reconcile.Res
 		return reconcile.Result{}, err
 	} else if err == nil {
 
-	}
+	}*/
 
 	return reconcile.Result{}, nil
 }
@@ -208,10 +212,76 @@ func convertHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconcile
 }
 
 func checkpointHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconcile.Result, error) {
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		panic(err.Error())
+	}
+	// creates the clientset
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+	node := &corev1.Node{}
+	nodeIP := ""
+	node, err = clientset.CoreV1().Nodes().Get(m.Spec.DestinationNode,metav1.GetOptions{})
+	if err != nil {
+		panic(err.Error())
+	}
+	for i := 0;i<len(node.Status.Addresses);i++ {
+		if node.Status.Addresses[i].Type == "InternalIP" {
+			nodeIP = node.Status.Addresses[i].Address
+		}
+	}
+	Host := nodeIP + ":10350"
+	conn, err := grpc.Dial(Host, grpc.WithInsecure())
+	if err != nil {
+		logs.Fatalln("did not connect: ", err)
+	}
+
+	defer conn.Close()
+	c := cp.NewCheckpointPeriodClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	in := &cp.InputValue{
+		Period:               &m.Spec.Period,
+		PodName:              nil,
+	}
+	_ , err = c.SetCheckpointPeriod(ctx, in)
+	if err != nil {
+		logs.Fatalln("did not connect: ", err)
+	}
 	return reconcile.Result{Requeue: true}, nil
 }
 
 func migrationHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconcile.Result, error) {
+	pod := &corev1.Pod{
+		TypeMeta:   m.Spec.Pod.Type,
+		ObjectMeta: metav1.ObjectMeta{},
+		Spec:       m.Spec.Pod.PodSpec,
+		Status:     corev1.PodStatus{},
+	}
+
+	y, err := yaml.Marshal(pod)
+	if err != nil {
+		log.Error(err, "err")
+	}
+	dir := "/nfs/"+m.Spec.DestinationNode+"/"+m.Spec.Podname+".yaml"
+	origindir := "/nfs/"+m.Spec.Node+"/"+m.Spec.Podname+".yaml"
+	//파일 쓰기
+	err = ioutil.WriteFile(dir, y, 0)
+	if err != nil {
+		panic(err)
+	}
+	if m.Spec.Node!=m.Spec.DestinationNode {
+		err3 := os.Remove(origindir)
+		if err3 != nil {
+			panic(err3)
+		}
+	}else {
+		if m.Spec.Purpose == "convert" {
+			return podDeleteHandler(m,r)
+		}
+	}
 
 	return reconcile.Result{Requeue: true}, nil
 }
@@ -224,36 +294,8 @@ func podDeleteHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconci
 	}
 	return reconcile.Result{Requeue: true}, nil
 }
-
-// newPodForCR returns a busybox pod with the same name/namespace as the cr
-func (r *ReconcileMigration)daemonSetForMigration(m *ketiv1alpha1.Migration) *appsv1.DaemonSet {
-	ls := labelsForMigration(m.Name)
-	return &appsv1.DaemonSet{
-		TypeMeta:   metav1.TypeMeta{
-			Kind:       "",
-			APIVersion: "",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:                       "",
-			Namespace:                  "",
-			Labels:                     ls,
-		},
-		Spec:       appsv1.DaemonSetSpec{
-			Selector:             &metav1.LabelSelector{
-				MatchLabels: map[string]string{},
-			},
-			Template:             corev1.PodTemplateSpec{
-				ObjectMeta: metav1.ObjectMeta{},
-				Spec:       corev1.PodSpec{},
-			},
-			UpdateStrategy:       appsv1.DaemonSetUpdateStrategy{
-				Type:          "RollingUpdate",
-			},
-		},
-	}
-}
-
+/*
 
 func labelsForMigration(name string) map[string]string {
 	return map[string]string{"app": "migration", "migration_cr": name}
-}
+}*/
