@@ -1,0 +1,10 @@
+apiVersion: keti.migration/v1alpha1
+kind: Migration
+metadata:
+  name: converttest
+spec:
+  # Add fields here
+  purpose: convert
+  node: cloudedge-worker4
+  podname: migrationtest
+

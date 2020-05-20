@@ -2,17 +2,21 @@ package migration
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	logs "log"
 	"os"
+	"strings"
 	"time"
 
 	ketiv1alpha1 "github.com/hth0919/migrationcontroller/pkg/apis/keti/v1alpha1"
 
 	cp "github.com/hth0919/checkpointproto"
 	"google.golang.org/grpc"
+	"gopkg.in/yaml.v2"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -25,7 +29,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
-	"gopkg.in/yaml.v2"
 )
 
 var log = logf.Log.WithName("controller_migration")
@@ -108,21 +111,22 @@ func (r *ReconcileMigration) Reconcile(request reconcile.Request) (reconcile.Res
 		// Error reading the object - requeue the request.
 		return reconcile.Result{}, err
 	}
-	if migration.Spec.Purpose == "Convert" || migration.Spec.Purpose == "convert" {
+	reqLogger.Info("Reconciling Migration",migration)
+	if strings.Contains(migration.Spec.Purpose ,"Convert") || strings.Contains(migration.Spec.Purpose, "convert") {
 		migration.Spec.Purpose = "convert"
 		result, err := convertHandler(migration,r)
 		if err != nil {
 			reqLogger.Error(err, err.Error())
 			return result, err
 		}
-	} else if migration.Spec.Purpose == "Checkpoint" || migration.Spec.Purpose == "checkpoint" || migration.Spec.Purpose == "CheckPoint" {
+	} else if strings.Contains(migration.Spec.Purpose, "Checkpoint") || strings.Contains(migration.Spec.Purpose, "checkpoint") || strings.Contains(migration.Spec.Purpose, "CheckPoint") {
 		migration.Spec.Purpose = "checkpoint"
 		result, err := checkpointHandler(migration,r)
 		if err != nil {
 			reqLogger.Error(err, err.Error())
 			return result, err
 		}
-	} else if migration.Spec.Purpose == "Migration" || migration.Spec.Purpose == "migration" {
+	} else if strings.Contains(migration.Spec.Purpose, "Migration") || strings.Contains(migration.Spec.Purpose, "migration") {
 		migration.Spec.Purpose = "migration"
 		result, err := migrationHandler(migration,r)
 		if err != nil {
@@ -130,7 +134,7 @@ func (r *ReconcileMigration) Reconcile(request reconcile.Request) (reconcile.Res
 			return result, err
 		}
 	} else {
-		reqLogger.Error(err, "Unsupported Value", migration.Spec.Purpose, " in keti.Migration")
+		reqLogger.Error(err, "Unsupported Value" + migration.Spec.Purpose + " in keti.Migration")
 		return reconcile.Result{}, err
 	}
 /*
@@ -164,9 +168,14 @@ func convertHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconcile
 	if err != nil && errors.IsNotFound(err) {
 		return reconcile.Result{}, err
 	}
+	s, _ := json.MarshalIndent(found, "", "  ")
+	fmt.Println("your pod show in json file")
+	fmt.Println(string(s))
+
 	m.Spec.Pod.Type = found.TypeMeta
 	m.Spec.Pod.Object = found.ObjectMeta
 	m.Spec.Pod.PodSpec = found.Spec
+	fmt.Println("(1/4)pod Copy complete, Creating checkpoint ")
 
 	/*체크포인트 생성 코드*/
 	config, err := rest.InClusterConfig()
@@ -208,6 +217,7 @@ func convertHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconcile
 	}
 
 	m.Spec.DestinationNode = m.Spec.Node
+	fmt.Println("(1/4)creating checkpoint complete, Creating Migrationable pod")
 	return migrationHandler(m,r)
 }
 
@@ -221,45 +231,55 @@ func checkpointHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconc
 	if err != nil {
 		panic(err.Error())
 	}
-	node := &corev1.Node{}
 	nodeIP := ""
-	node, err = clientset.CoreV1().Nodes().Get(m.Spec.DestinationNode,metav1.GetOptions{})
+	nodes, err := clientset.CoreV1().Nodes().List(metav1.ListOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
-	for i := 0;i<len(node.Status.Addresses);i++ {
-		if node.Status.Addresses[i].Type == "InternalIP" {
-			nodeIP = node.Status.Addresses[i].Address
+	for j := 0;j<len(nodes.Items);j++ {
+		node := nodes.Items[j]
+		for i := 0; i < len(node.Status.Addresses); i++ {
+			if node.Status.Addresses[i].Type == "InternalIP" {
+				nodeIP = node.Status.Addresses[i].Address
+			}
+		}
+		fmt.Println(node.Name,"Checkpoint collector Host:",nodeIP + ":10350")
+		Host := nodeIP + ":10350"
+		conn, err := grpc.Dial(Host, grpc.WithInsecure())
+		if err != nil {
+			logs.Fatalln("did not connect: ", err)
+		}
+
+		defer conn.Close()
+		c := cp.NewCheckpointPeriodClient(conn)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		in := &cp.InputValue{
+			Period:               &m.Spec.Period,
+			PodName:              nil,
+		}
+		_ , err = c.SetCheckpointPeriod(ctx, in)
+		if err != nil {
+			logs.Fatalln("did not connect: ", err)
 		}
 	}
-	Host := nodeIP + ":10350"
-	conn, err := grpc.Dial(Host, grpc.WithInsecure())
-	if err != nil {
-		logs.Fatalln("did not connect: ", err)
-	}
 
-	defer conn.Close()
-	c := cp.NewCheckpointPeriodClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	in := &cp.InputValue{
-		Period:               &m.Spec.Period,
-		PodName:              nil,
-	}
-	_ , err = c.SetCheckpointPeriod(ctx, in)
-	if err != nil {
-		logs.Fatalln("did not connect: ", err)
-	}
 	return reconcile.Result{Requeue: true}, nil
 }
 
 func migrationHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconcile.Result, error) {
+
 	pod := &corev1.Pod{
 		TypeMeta:   m.Spec.Pod.Type,
 		ObjectMeta: metav1.ObjectMeta{},
 		Spec:       m.Spec.Pod.PodSpec,
 		Status:     corev1.PodStatus{},
 	}
+
+	s, _ := json.MarshalIndent(pod, "", "  ")
+	fmt.Println("your pod show in json file")
+	fmt.Println(string(s))
+	fmt.Println("your pod will migrated from",m.Spec.Node,"to",m.Spec.DestinationNode)
 
 	y, err := yaml.Marshal(pod)
 	if err != nil {
@@ -279,6 +299,7 @@ func migrationHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconci
 		}
 	}else {
 		if m.Spec.Purpose == "convert" {
+			fmt.Println("(3/4)Create Migrationable pod complete, Delete existed pod")
 			return podDeleteHandler(m,r)
 		}
 	}
@@ -288,10 +309,11 @@ func migrationHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconci
 
 func podDeleteHandler(m *ketiv1alpha1.Migration, r *ReconcileMigration) (reconcile.Result, error) {
 	found := &corev1.Pod{}
-	err := r.client.Get(context.TODO(), types.NamespacedName{Name: m.Spec.Podname, Namespace: m.Spec.Namespace}, found)
+	err := r.client.Delete(context.TODO(), found)
 	if err != nil && errors.IsNotFound(err) {
 		return reconcile.Result{}, err
 	}
+	fmt.Println("(4/4)Pod delete complete, All done")
 	return reconcile.Result{Requeue: true}, nil
 }
 /*

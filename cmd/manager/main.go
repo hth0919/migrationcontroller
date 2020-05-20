@@ -8,7 +8,6 @@ import (
 	"os"
 	"runtime"
 	"strings"
-
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/client-go/rest"
@@ -71,6 +70,7 @@ func main() {
 
 	printVersion()
 
+
 	namespace, err := k8sutil.GetWatchNamespace()
 	if err != nil {
 		log.Error(err, "Failed to get watch namespace")
@@ -86,7 +86,7 @@ func main() {
 
 	ctx := context.TODO()
 	// Become the leader before proceeding
-	err = leader.Become(ctx, "memcached-operator-lock")
+	err = leader.Become(ctx, "migrations-lock")
 	if err != nil {
 		log.Error(err, "")
 		os.Exit(1)

@@ -5,7 +5,7 @@ metadata:
 spec:
   group: keti.migration
   names:
-    kind: Migration
+    kind: Rule
     listKind: MigrationList
     plural: migrations
     singular: migration
@@ -36,20 +36,16 @@ spec:
               type: string
             Node:
               type: string
-            Pod:
+            Podname:
               type: string
             DestinationNode:
               type: string
             Period:
               format: int64
               type: integer
-            PodSpec:
-              type: object
         status:
           properties:
             LastCheckpointCreate:
-              type: object
-            PodStatus:
               type: object
       type: object
   version: v1alpha1

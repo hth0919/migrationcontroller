@@ -1,0 +1,9 @@
+apiVersion: keti.migration/v1alpha1
+kind: Migration
+metadata:
+  name: periodtest
+spec:
+  # Add fields here
+  purpose: period
+  period: 10
+

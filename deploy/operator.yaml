@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: memcached-operator
+  name: migrations
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: memcached-operator
+      name: migrations
   template:
     metadata:
       labels:
-        name: memcached-operator
+        name: migrations
     spec:
-      serviceAccountName: memcached-operator
+      serviceAccountName: migrations
       containers:
-        - name: memcached-operator
+        - name: migrations
           # Replace this with the built image name
-          image: REPLACE_IMAGE
+          image: hth0919/migrations:v0.0.4
           command:
-          - memcached-operator
+          - migrations
           imagePullPolicy: Always
           env:
             - name: WATCH_NAMESPACE
@@ -30,4 +30,4 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
-              value: "memcached-operator"
+              value: "migrations"
