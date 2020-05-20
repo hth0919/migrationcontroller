@@ -6,19 +6,19 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      name: migrations
+      name: migration-rules
   template:
     metadata:
       labels:
-        name: migrations
+        name: migration-rules
     spec:
-      serviceAccountName: migrations
+      serviceAccountName: migration-rules
       containers:
         - name: migrations
           # Replace this with the built image name
-          image: hth0919/migrations:v0.0.4
+          image: hth0919/migrationrules:v0.0.4
           command:
-          - migrations
+          - migrationrules
           imagePullPolicy: Always
           env:
             - name: WATCH_NAMESPACE
@@ -30,4 +30,4 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
-              value: "migrations"
+              value: "migration-rules"

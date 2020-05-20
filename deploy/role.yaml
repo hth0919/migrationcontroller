@@ -6,7 +6,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   creationTimestamp: null
-  name: migrationrules
+  name: migration-rules
 rules:
 - apiGroups:
   - keti.migration
