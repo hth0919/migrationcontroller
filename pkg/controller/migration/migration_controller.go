@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	ketiv1alpha1 "github.com/hth0919/migrationcontroller/pkg/apis/keti/v1alpha1"
+	ketiv1alpha1 "github.com/hth0919/migrationcontroller/pkg/apis/keti/v1"
 
 	cp "github.com/hth0919/checkpointproto"
 	"google.golang.org/grpc"
@@ -137,27 +137,27 @@ func (r *ReconcileMigration) Reconcile(request reconcile.Request) (reconcile.Res
 		reqLogger.Error(err, "Unsupported Value" + migration.Spec.Purpose + " in keti.Migration")
 		return reconcile.Result{}, err
 	}
-/*
+	/*
 
-		found := &appsv1.DaemonSet{}
-	err = r.client.Get(context.TODO(), types.NamespacedName{Name: migration.Name, Namespace: migration.Namespace}, found)
-	if err != nil && errors.IsNotFound(err) { // 만약에 migration 위한 Deployment가 없다면
-		// 새로운 Deployment를 생성합니다. deploymentForMemcached 함수는 Deployment를 위한 spec을 반환합니다.
-		dem := r.daemonSetForMigration(migration)
-		reqLogger.Info("Creating a new DaemonSet", "DaemonSet.Namespace", dem.Namespace, "DaemonSet.Name", dem.Name)
-		err = r.client.Create(context.TODO(), dem)
-		if err != nil {
-			//reqLogger.Error(err, "Failed to create new Deployment", "Deployment.Namespace", dem.Namespace, "Deployment.Name", dep.Name)
+			found := &appsv1.DaemonSet{}
+		err = r.client.Get(context.TODO(), types.NamespacedName{Name: migration.Name, Namespace: migration.Namespace}, found)
+		if err != nil && errors.IsNotFound(err) { // 만약에 migration 위한 Deployment가 없다면
+			// 새로운 Deployment를 생성합니다. deploymentForMemcached 함수는 Deployment를 위한 spec을 반환합니다.
+			dem := r.daemonSetForMigration(migration)
+			reqLogger.Info("Creating a new DaemonSet", "DaemonSet.Namespace", dem.Namespace, "DaemonSet.Name", dem.Name)
+			err = r.client.Create(context.TODO(), dem)
+			if err != nil {
+				//reqLogger.Error(err, "Failed to create new Deployment", "Deployment.Namespace", dem.Namespace, "Deployment.Name", dep.Name)
+				return reconcile.Result{}, err
+			}
+			// Deployment가 성공적으로 생성되었다면, 이 이벤트를 다시 Requeue 합니다.
+			return reconcile.Result{Requeue: true}, nil
+		} else if err != nil {
+			reqLogger.Error(err, "Failed to get Deployment")
 			return reconcile.Result{}, err
-		}
-		// Deployment가 성공적으로 생성되었다면, 이 이벤트를 다시 Requeue 합니다.
-		return reconcile.Result{Requeue: true}, nil
-	} else if err != nil {
-		reqLogger.Error(err, "Failed to get Deployment")
-		return reconcile.Result{}, err
-	} else if err == nil {
+		} else if err == nil {
 
-	}*/
+		}*/
 
 	return reconcile.Result{}, nil
 }
