@@ -24,6 +24,45 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
+type StoreValue struct {
+	Yaml                 []byte   `protobuf:"bytes,1,req,name=Yaml" json:"Yaml,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *StoreValue) Reset()         { *m = StoreValue{} }
+func (m *StoreValue) String() string { return proto.CompactTextString(m) }
+func (*StoreValue) ProtoMessage()    {}
+func (*StoreValue) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e6ed858329eb171d, []int{0}
+}
+
+func (m *StoreValue) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_StoreValue.Unmarshal(m, b)
+}
+func (m *StoreValue) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_StoreValue.Marshal(b, m, deterministic)
+}
+func (m *StoreValue) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StoreValue.Merge(m, src)
+}
+func (m *StoreValue) XXX_Size() int {
+	return xxx_messageInfo_StoreValue.Size(m)
+}
+func (m *StoreValue) XXX_DiscardUnknown() {
+	xxx_messageInfo_StoreValue.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StoreValue proto.InternalMessageInfo
+
+func (m *StoreValue) GetYaml() []byte {
+	if m != nil {
+		return m.Yaml
+	}
+	return nil
+}
+
 type InputValue struct {
 	Period               *int64   `protobuf:"varint,1,req,name=Period" json:"Period,omitempty"`
 	PodName              []string `protobuf:"bytes,2,rep,name=PodName" json:"PodName,omitempty"`
@@ -36,7 +75,7 @@ func (m *InputValue) Reset()         { *m = InputValue{} }
 func (m *InputValue) String() string { return proto.CompactTextString(m) }
 func (*InputValue) ProtoMessage()    {}
 func (*InputValue) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e6ed858329eb171d, []int{0}
+	return fileDescriptor_e6ed858329eb171d, []int{1}
 }
 
 func (m *InputValue) XXX_Unmarshal(b []byte) error {
@@ -83,7 +122,7 @@ func (m *ReturnValue) Reset()         { *m = ReturnValue{} }
 func (m *ReturnValue) String() string { return proto.CompactTextString(m) }
 func (*ReturnValue) ProtoMessage()    {}
 func (*ReturnValue) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e6ed858329eb171d, []int{1}
+	return fileDescriptor_e6ed858329eb171d, []int{2}
 }
 
 func (m *ReturnValue) XXX_Unmarshal(b []byte) error {
@@ -129,7 +168,7 @@ func (m *CreateCheckpoint) Reset()         { *m = CreateCheckpoint{} }
 func (m *CreateCheckpoint) String() string { return proto.CompactTextString(m) }
 func (*CreateCheckpoint) ProtoMessage()    {}
 func (*CreateCheckpoint) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e6ed858329eb171d, []int{2}
+	return fileDescriptor_e6ed858329eb171d, []int{3}
 }
 
 func (m *CreateCheckpoint) XXX_Unmarshal(b []byte) error {
@@ -169,7 +208,7 @@ func (m *PodReturnValue) Reset()         { *m = PodReturnValue{} }
 func (m *PodReturnValue) String() string { return proto.CompactTextString(m) }
 func (*PodReturnValue) ProtoMessage()    {}
 func (*PodReturnValue) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e6ed858329eb171d, []int{3}
+	return fileDescriptor_e6ed858329eb171d, []int{4}
 }
 
 func (m *PodReturnValue) XXX_Unmarshal(b []byte) error {
@@ -205,6 +244,7 @@ func (m *PodReturnValue) GetErr() string {
 }
 
 func init() {
+	proto.RegisterType((*StoreValue)(nil), "checkpoint.StoreValue")
 	proto.RegisterType((*InputValue)(nil), "checkpoint.InputValue")
 	proto.RegisterType((*ReturnValue)(nil), "checkpoint.ReturnValue")
 	proto.RegisterType((*CreateCheckpoint)(nil), "checkpoint.CreateCheckpoint")
@@ -216,21 +256,24 @@ func init() {
 }
 
 var fileDescriptor_e6ed858329eb171d = []byte{
-	// 214 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x8f, 0xc1, 0x8a, 0x83, 0x30,
-	0x10, 0x40, 0x35, 0xc2, 0x2e, 0x8e, 0xa0, 0x92, 0x05, 0x57, 0x64, 0x0f, 0x92, 0xbd, 0xc8, 0xc2,
-	0x7a, 0x58, 0xd8, 0x2f, 0xf0, 0xd2, 0x5e, 0x44, 0x5a, 0xe8, 0x3d, 0x98, 0xa1, 0x95, 0xb6, 0x89,
-	0x84, 0xf8, 0x57, 0xfd, 0xc8, 0x42, 0x85, 0x26, 0xb6, 0xbd, 0x4e, 0x5e, 0xde, 0xcc, 0x83, 0x64,
-	0x8f, 0x12, 0x35, 0x37, 0x28, 0xea, 0x51, 0x2b, 0xa3, 0x28, 0xf4, 0x07, 0xec, 0x8f, 0xa3, 0x1a,
-	0xa4, 0x61, 0xbf, 0x00, 0x6b, 0x39, 0x4e, 0x66, 0xc7, 0x4f, 0x13, 0xd2, 0x18, 0xde, 0x3a, 0xd4,
-	0x83, 0x12, 0xb9, 0x5f, 0x92, 0x2a, 0xa0, 0x09, 0xbc, 0x77, 0x4a, 0xb4, 0xfc, 0x8c, 0x39, 0x29,
-	0x83, 0x2a, 0x64, 0x3f, 0x10, 0x6d, 0xd0, 0x4c, 0x5a, 0xbe, 0xe6, 0x23, 0x08, 0x50, 0xeb, 0x9c,
-	0x94, 0xa4, 0x0a, 0xd9, 0x37, 0xa4, 0x8d, 0x46, 0x6e, 0xb0, 0xb9, 0xaf, 0x73, 0x85, 0xfe, 0x0d,
-	0xfa, 0x87, 0xb8, 0x53, 0xc2, 0x75, 0x66, 0x10, 0xdb, 0x0f, 0x96, 0x5c, 0xb8, 0xff, 0x2e, 0x3e,
-	0xa4, 0x96, 0x9a, 0x6f, 0xa0, 0x2b, 0xf8, 0xd8, 0xa2, 0x79, 0x1a, 0x67, 0xb5, 0xed, 0xad, 0x6d,
-	0x6c, 0xf1, 0xe9, 0xce, 0x9d, 0x0b, 0x98, 0x47, 0x5b, 0xd7, 0x3e, 0x47, 0xd0, 0x2f, 0x17, 0x7f,
-	0x0c, 0x2b, 0x0a, 0xf7, 0x75, 0x59, 0xc4, 0xbc, 0x6b, 0x00, 0x00, 0x00, 0xff, 0xff, 0x21, 0xc5,
-	0x4b, 0xb6, 0x83, 0x01, 0x00, 0x00,
+	// 264 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x51, 0xc1, 0x4a, 0xc3, 0x40,
+	0x10, 0x6d, 0x12, 0x51, 0xf2, 0x94, 0x1a, 0x56, 0xa8, 0x21, 0x78, 0x08, 0x7b, 0x90, 0x1c, 0x24,
+	0x07, 0x2f, 0xde, 0x04, 0xe9, 0x45, 0x3d, 0x94, 0xb0, 0x05, 0xc1, 0xe3, 0xd2, 0x0c, 0x5a, 0x6c,
+	0xb3, 0x61, 0xd9, 0x7c, 0xb7, 0xbf, 0x20, 0x4d, 0x6b, 0x77, 0xda, 0x42, 0x6e, 0x3b, 0xb3, 0x6f,
+	0xe6, 0xbd, 0x37, 0x0f, 0xd7, 0x5f, 0xd4, 0x90, 0xd5, 0x8e, 0xea, 0xb2, 0xb5, 0xc6, 0x19, 0x81,
+	0xc5, 0x37, 0x2d, 0x7e, 0x5a, 0xb3, 0x6c, 0x9c, 0xcc, 0x81, 0xb9, 0x33, 0x96, 0x3e, 0xf4, 0xaa,
+	0x23, 0x21, 0x70, 0xf6, 0xa9, 0xd7, 0xab, 0x34, 0xc8, 0xc3, 0xe2, 0x4a, 0xf5, 0x6f, 0xf9, 0x0c,
+	0xbc, 0x35, 0x6d, 0xe7, 0xb6, 0x88, 0x09, 0xce, 0x2b, 0xb2, 0x4b, 0x53, 0xf7, 0x98, 0x48, 0xed,
+	0x2a, 0x91, 0xe2, 0xa2, 0x32, 0xf5, 0x4c, 0xaf, 0x29, 0x0d, 0xf3, 0xa8, 0x88, 0xd5, 0x7f, 0x29,
+	0x9f, 0x70, 0xa9, 0xc8, 0x75, 0xb6, 0x19, 0x5e, 0x90, 0x20, 0x22, 0x6b, 0xd3, 0x30, 0x0f, 0x8b,
+	0x58, 0x6d, 0x9e, 0xf2, 0x01, 0xc9, 0xd4, 0x92, 0x76, 0x34, 0xdd, 0xcb, 0xe5, 0x34, 0x41, 0x8f,
+	0xdc, 0xd3, 0xbc, 0x63, 0x5c, 0x99, 0x9a, 0x33, 0xdd, 0x63, 0xec, 0x27, 0xd9, 0xc8, 0x51, 0xf7,
+	0x94, 0xf9, 0xf1, 0x37, 0x40, 0xe2, 0x41, 0x3b, 0x81, 0xaf, 0xb8, 0x99, 0x93, 0x3b, 0x69, 0x4f,
+	0x4a, 0x7f, 0xcd, 0xd2, 0x1f, 0x2a, 0xbb, 0xe5, 0x7d, 0x26, 0x4b, 0x8e, 0xc4, 0x8c, 0x6f, 0xdf,
+	0x5a, 0x14, 0x77, 0x1c, 0x7e, 0x6c, 0x3b, 0xcb, 0xf8, 0xef, 0xa1, 0x4d, 0x39, 0x12, 0x2f, 0x88,
+	0xfb, 0x0c, 0x37, 0x71, 0x1d, 0xea, 0xf1, 0xd1, 0x0e, 0xaf, 0xf8, 0x0b, 0x00, 0x00, 0xff, 0xff,
+	0xef, 0x7d, 0x05, 0xd1, 0x24, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -247,6 +290,7 @@ const _ = grpc.SupportPackageIsVersion6
 type CheckpointPeriodClient interface {
 	SetCheckpointPeriod(ctx context.Context, in *InputValue, opts ...grpc.CallOption) (*ReturnValue, error)
 	CheckpointCreate(ctx context.Context, in *CreateCheckpoint, opts ...grpc.CallOption) (*PodReturnValue, error)
+	StoreYaml(ctx context.Context, in *StoreValue, opts ...grpc.CallOption) (*PodReturnValue, error)
 }
 
 type checkpointPeriodClient struct {
@@ -275,10 +319,20 @@ func (c *checkpointPeriodClient) CheckpointCreate(ctx context.Context, in *Creat
 	return out, nil
 }
 
+func (c *checkpointPeriodClient) StoreYaml(ctx context.Context, in *StoreValue, opts ...grpc.CallOption) (*PodReturnValue, error) {
+	out := new(PodReturnValue)
+	err := c.cc.Invoke(ctx, "/checkpoint.CheckpointPeriod/StoreYaml", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CheckpointPeriodServer is the server API for CheckpointPeriod service.
 type CheckpointPeriodServer interface {
 	SetCheckpointPeriod(context.Context, *InputValue) (*ReturnValue, error)
 	CheckpointCreate(context.Context, *CreateCheckpoint) (*PodReturnValue, error)
+	StoreYaml(context.Context, *StoreValue) (*PodReturnValue, error)
 }
 
 // UnimplementedCheckpointPeriodServer can be embedded to have forward compatible implementations.
@@ -290,6 +344,9 @@ func (*UnimplementedCheckpointPeriodServer) SetCheckpointPeriod(ctx context.Cont
 }
 func (*UnimplementedCheckpointPeriodServer) CheckpointCreate(ctx context.Context, req *CreateCheckpoint) (*PodReturnValue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckpointCreate not implemented")
+}
+func (*UnimplementedCheckpointPeriodServer) StoreYaml(ctx context.Context, req *StoreValue) (*PodReturnValue, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StoreYaml not implemented")
 }
 
 func RegisterCheckpointPeriodServer(s *grpc.Server, srv CheckpointPeriodServer) {
@@ -332,6 +389,24 @@ func _CheckpointPeriod_CheckpointCreate_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CheckpointPeriod_StoreYaml_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StoreValue)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CheckpointPeriodServer).StoreYaml(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/checkpoint.CheckpointPeriod/StoreYaml",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CheckpointPeriodServer).StoreYaml(ctx, req.(*StoreValue))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _CheckpointPeriod_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "checkpoint.CheckpointPeriod",
 	HandlerType: (*CheckpointPeriodServer)(nil),
@@ -343,6 +418,10 @@ var _CheckpointPeriod_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckpointCreate",
 			Handler:    _CheckpointPeriod_CheckpointCreate_Handler,
+		},
+		{
+			MethodName: "StoreYaml",
+			Handler:    _CheckpointPeriod_StoreYaml_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

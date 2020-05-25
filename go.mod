@@ -3,7 +3,8 @@ module github.com/hth0919/migrationcontroller
 go 1.13
 
 require (
-	github.com/hth0919/checkpointproto v0.0.2
+	github.com/hth0919/checkpointproto v0.0.3
+	github.com/hth0919/migcore v0.1.4 // indirect
 	github.com/hth0919/migrationclient v0.0.8 // indirect
 	github.com/operator-framework/operator-sdk v0.17.0
 	github.com/spf13/pflag v1.0.5

@@ -14,7 +14,7 @@ spec:
     spec:
       serviceAccountName: migration-rules
       containers:
-        - name: migrations
+        - name: migrationrule
           # Replace this with the built image name
           image: hth0919/migrationrules:v0.0.4
           command:

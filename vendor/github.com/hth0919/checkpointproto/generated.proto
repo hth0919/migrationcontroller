@@ -5,6 +5,11 @@ package checkpoint;
 service CheckpointPeriod {
     rpc SetCheckpointPeriod (InputValue) returns (ReturnValue) {}
     rpc CheckpointCreate (CreateCheckpoint) returns (PodReturnValue) {}
+    rpc StoreYaml (StoreValue) returns (PodReturnValue) {}
+}
+
+message StoreValue {
+    required bytes Yaml = 1;
 }
 
 message InputValue {
