@@ -480,9 +480,7 @@ github.com/hth0919/checkpointcollector v0.0.1 h1:asGHWxpr0atplG0gfr5IFyy/AGNJTfP
 github.com/hth0919/checkpointcollector v0.0.1/go.mod h1:zlQ2ManlaY51OV5jHNAS5gperUjHO8eZ+ye2YAp0tik=
 github.com/hth0919/checkpointproto v0.0.2 h1:saLxYLwrZDxjwAA33ZbjBPoK28A4/Zca6YN0VRI3T1U=
 github.com/hth0919/checkpointproto v0.0.2/go.mod h1:7H+k2EUrMF15gxQHNVKsjQIUp1cqDtLt8ZsadfOkvjQ=
-github.com/hth0919/checkpointproto v0.0.3 h1:vfIFxglJiCnbRl0Ifcm/ZS5FlHln15GdorqvdtyRb00=
 github.com/hth0919/checkpointproto v0.0.3/go.mod h1:7H+k2EUrMF15gxQHNVKsjQIUp1cqDtLt8ZsadfOkvjQ=
-github.com/hth0919/migcore v0.1.4 h1:1r/qSLcwRCF0FFnOwKFZKTDaOCWpt2PLWv8NwWJPAYs=
 github.com/hth0919/migcore v0.1.4/go.mod h1:uAKKOONzdmjDNgsBPlZzKFUY/c7puxvqqter8lPoHw0=
 github.com/hth0919/migrationclient v0.0.8 h1:14CJbAXmFPwLXkkyHYsxnYpgyRR3JlHKQa59Wtp5/GI=
 github.com/hth0919/migrationclient v0.0.8/go.mod h1:ln8IurGsFdqpPaGqxbaYfFLfb+EKf4nH5kR/S5dtu7c=
